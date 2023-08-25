@@ -1,0 +1,6 @@
+venv
+__pycache__
+ngrok.exe
+settings copy.py
+.env
+LoQueFalta.txt
