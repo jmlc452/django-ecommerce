@@ -176,24 +176,25 @@ def password_reset_request(request):
                 #email = EmailMessage(subject, message, to=[associated_user.email])
                 try:
                     
-                    body = 'Subject: {}\n\n{}'.format(subject, message)
+                    msg = ("Subject: %s\r\nFrom: %s\r\nTo: %s\r\n\r\n %s"
+                    % (subject,settings.GMAIL_ORIGIN, user_email,message))
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
                     server.login(settings.GMAIL_ORIGIN, settings.GMAIL_PASSWORD)
-                    server.sendmail(settings.GMAIL_ORIGIN, associated_user.email, body)
+                    server.sendmail(settings.GMAIL_ORIGIN, associated_user.email, msg)
                     server.quit()
                     messages.success(request,
                         """
-                        <h2>Password reset sent</h2><hr>
-                        <p>
+                        Password reset sent
+                        
                             We've emailed you instructions for setting your password, if an account exists with the email you entered. 
-                            You should receive them shortly.<br>If you don't receive an email, please make sure you've entered the address 
+                            You should receive them shortly.If you don't receive an email, please make sure you've entered the address 
                             you registered with, and check your spam folder.
-                        </p>
+                        
                         """
                     )
                 except:
-                    messages.error(request, "Problem sending reset password email, <b>SERVER PROBLEM</b>")
+                    messages.error(request, "Problem sending reset password email, SERVER PROBLEM")
             return redirect('inicio')
 
         for key, error in list(form.errors.items()):
@@ -221,7 +222,7 @@ def passwordResetConfirm(request, uidb64, token):
             form = SetPasswordForm(user, request.POST)
             if form.is_valid():
                 form.save()
-                messages.success(request, "Your password has been set. You may go ahead and <b>log in </b> now.")
+                messages.success(request, "Your password has been set. You may go ahead and log in  now.")
                 return redirect('inicio')
             else:
                 for error in list(form.errors.values()):
